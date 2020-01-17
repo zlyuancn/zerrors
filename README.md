@@ -6,9 +6,9 @@
 
 `go get -u github.com/zlyuancn/zerrors`
 
-# 此代码非原创
+# 部分代码非原创
 
-+ 参考 [github.com/pkg/errors](github.com/pkg/errors)
++ 参考 [github.com/pkg/errors](https://github.com/pkg/errors)
 
 # 文档
 
