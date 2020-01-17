@@ -5,6 +5,7 @@ import (
     "io"
 )
 
+// 创建一个包含完整调用链的错误
 func New(message string) error {
     return &fundamental{
         msg:   message,
@@ -12,6 +13,15 @@ func New(message string) error {
     }
 }
 
+// 创建一个包含完整调用链的错误
+func Newf(format string, args ...interface{}) error {
+    return &fundamental{
+        msg:   fmt.Sprintf(format, args...),
+        stack: callers(),
+    }
+}
+
+// 创建一个包含完整调用链的错误
 func Errorf(format string, args ...interface{}) error {
     return &fundamental{
         msg:   fmt.Sprintf(format, args...),
@@ -42,6 +52,7 @@ func (f *fundamental) Format(s fmt.State, verb rune) {
     }
 }
 
+// 让一个error持有当前完整调用链
 func WithStack(err error) error {
     if err == nil {
         return nil
@@ -75,6 +86,7 @@ func (w *withStack) Format(s fmt.State, verb rune) {
     }
 }
 
+// 对一个错误进行描述并包含当前完整调用链
 func Wrap(err error, message string) error {
     if err == nil {
         return nil
@@ -89,6 +101,7 @@ func Wrap(err error, message string) error {
     }
 }
 
+// 对一个错误进行描述并包含当前完整调用链
 func Wrapf(err error, format string, args ...interface{}) error {
     if err == nil {
         return nil
@@ -103,6 +116,7 @@ func Wrapf(err error, format string, args ...interface{}) error {
     }
 }
 
+// 对一个错误进行描述, 不包含调用信息
 func WithMessage(err error, message string) error {
     if err == nil {
         return nil
@@ -113,6 +127,7 @@ func WithMessage(err error, message string) error {
     }
 }
 
+// 对一个错误进行描述, 不包含调用信息
 func WithMessagef(err error, format string, args ...interface{}) error {
     if err == nil {
         return nil
@@ -145,6 +160,7 @@ func (w *withMessage) Format(s fmt.State, verb rune) {
     }
 }
 
+// 获取错误原因, 它会透过zerrors模块的包装获取最开始的错误
 func Cause(err error) error {
     type causer interface {
         Cause() error
@@ -160,9 +176,12 @@ func Cause(err error) error {
     return err
 }
 
+// 获取详细的错误描述
 func ToDetailString(err error) string {
     return fmt.Sprintf("%+v", err)
 }
+
+// 获取简要的错误描述
 func ToString(err error) string {
     return err.Error()
 }
