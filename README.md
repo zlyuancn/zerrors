@@ -77,6 +77,13 @@ func main() {
     WithMessagef(err error, format string, args ...interface{}) error
 ```
 
+## 错误列表
+
+```
+创建一个error列表
+    NewErrors() *Errors
+```
+
 ## 工具
 
 ```
