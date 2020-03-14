@@ -94,36 +94,39 @@ func (m *Errors) AddfNoStack(format string, a ...interface{}) {
 }
 
 func (m *Errors) String() string {
-    return m.string("", "s")
-}
-
-func (m *Errors) string(flat string, verb string) string {
     if len(m.errs) == 0 {
         return "<nil>"
     }
 
-    f := fmt.Sprintf("%%d: %%%s%s\n", flat, verb)
-
-    var bs bytes.Buffer
-    bs.WriteString("zerrors.Errors: {\n")
-    for i, e := range m.errs {
-        bs.WriteString(fmt.Sprintf(f, i, e))
-    }
-    bs.WriteString("}\n")
-    return bs.String()
+    return m.errs[0].Error()
 }
 
 func (m *Errors) Format(s fmt.State, verb rune) {
+    if len(m.errs) == 0 {
+        io.WriteString(s, "<nil>")
+        return
+    }
+
     switch verb {
     case 'v':
+        var f string
         if s.Flag('+') {
-            io.WriteString(s, m.string("+", "v"))
-            return
+            f = "%d: %+v\n"
+        } else {
+            f = "%d: %v\n"
         }
-        fallthrough
+
+        var bs bytes.Buffer
+        bs.WriteString("zerrors.Errors: {\n")
+        for i, e := range m.errs {
+            bs.WriteString(fmt.Sprintf(f, i, e))
+        }
+        bs.WriteString("}")
+
+        io.WriteString(s, bs.String())
     case 's':
-        io.WriteString(s, m.string("", "s"))
+        io.WriteString(s, m.errs[0].Error())
     case 'q':
-        io.WriteString(s, m.string("", "q"))
+        fmt.Fprintf(s, "%q", m.errs[0])
     }
 }
